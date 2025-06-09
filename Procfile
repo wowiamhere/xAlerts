@@ -1,1 +1,1 @@
-worker: python extrasAlertsScraper.py
+web: python extrasAlertsScraper.py

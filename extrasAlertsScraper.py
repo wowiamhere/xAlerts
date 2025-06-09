@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 
 # FOR TELEGRAM
-bot_token = '7756998109:AAGHjhJiL48bpUv0fqVEpveoV_58nMi8Kdw'
+bot_token = ''
 chat_id = '6451638522'
 telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
 telegram_message = ''
