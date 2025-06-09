@@ -63,8 +63,6 @@ while(True):
 		state = [ st in hshs for st in cur_hshs ]
 		new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
 		print('NEW!!!!!--->', new_alerts )
-		# !!!!!!!!!!!get code
-		# pass_code = ?
 		
 		if ( len(new_alerts) > 0): 
 			driver = webdriver.Chrome()
@@ -122,6 +120,6 @@ while(True):
 	else:
 		build_hash_arr( hshs )
 
-	time.sleep(10)
+	time.sleep(30)
 
 
