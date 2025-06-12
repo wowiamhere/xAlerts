@@ -135,5 +135,5 @@ def new_alerts():
 
 	return dict(tm = tm) 
 
-
-app.run( host='localhost', port=8080 )
+if __name__ == '__main__':
+	app.run( host='/', port=8000 )
