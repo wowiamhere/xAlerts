@@ -1,4 +1,4 @@
 bottle
 requests
-BeautifulSoup
+beautifulsoup4
 selenium
