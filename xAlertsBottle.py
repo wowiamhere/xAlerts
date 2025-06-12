@@ -7,6 +7,7 @@ import hashlib
 import re
 import time
 import tempfile
+import uuid
 
 # SELENIUM IMPORTS
 from selenium import webdriver
