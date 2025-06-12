@@ -1,4 +1,4 @@
-from bottle import route, run, SimpleTemplate, template, Bottle, view, Options
+from bottle import route, run, SimpleTemplate, template, Bottle, view
 
 import os
 import requests
@@ -12,6 +12,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
+from selenium.webdriver.chrome.options import Options
 
 sel_ops = Options()
 sel_ops.add_argument('--headless')
