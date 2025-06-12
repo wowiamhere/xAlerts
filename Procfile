@@ -1,1 +1,1 @@
-web: python xAlertsBottle.py
+web: python app.py
