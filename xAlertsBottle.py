@@ -16,10 +16,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 sel_ops = Options()
+sel_ops.add_argument(f'--user-data-dir={tempfile.mkdtemp()}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
-sel_ops.add_argument(f'--user-data-dir={tempfile.mkdtemp()}')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
