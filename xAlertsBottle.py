@@ -131,7 +131,7 @@ def new_alerts():
 					tm.append( telegram_message )
 					telegram_message = ''
 
-			driver.close()
+			driver.quit()
 
 		hshs = cur_hshs
 		cur_hshs = []
