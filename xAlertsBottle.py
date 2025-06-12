@@ -17,7 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
 tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
-os.makedirs( temp_dir, exist_ok=True )
+os.makedirs( tmp_dir, exist_ok=True )
 
 sel_ops = Options()
 sel_ops.add_argument(f'--user-data-dir={temp_dir}')
