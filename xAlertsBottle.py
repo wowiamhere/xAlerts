@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import hashlib
 import re
 import time
+import temfile
 
 # SELENIUM IMPORTS
 from selenium import webdriver
@@ -18,6 +19,7 @@ sel_ops = Options()
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
+sel_ops.add_argument(f'--user-data-dir={tempfile.mkdtemp()}')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
