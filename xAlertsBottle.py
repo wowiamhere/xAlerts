@@ -16,6 +16,8 @@ from selenium.webdriver.chrome.options import Options
 
 sel_ops = Options()
 sel_ops.add_argument('--headless')
+sel_ops.add_argument('--no-sandbox')
+sel_ops.add_argument('--disable-dev-shm-usage')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
