@@ -1,4 +1,4 @@
-from bottle import route, run, SimpleTemplate, template, Bottle, view
+from bottle import route, run, SimpleTemplate, template, Bottle, view, Options
 
 import os
 import requests
@@ -12,6 +12,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
+
+sel_ops = Options()
+sel_ops.add_argument('--headless')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
@@ -63,6 +66,7 @@ def new_alerts():
 	global alerts
 	global pass_code
 	global tm
+	global sel_ops
 
 	tm = []
 
@@ -77,7 +81,7 @@ def new_alerts():
 		new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
 		
 		if ( len(new_alerts) > 0): 
-			driver = webdriver.Chrome()
+			driver = webdriver.Chrome( options=sel_ops )
 			
 			for alert in new_alerts:
 
