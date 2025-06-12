@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import hashlib
 import re
 import time
-import temfile
+import tempfile
 
 # SELENIUM IMPORTS
 from selenium import webdriver
