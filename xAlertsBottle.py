@@ -20,7 +20,7 @@ tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 os.makedirs( tmp_dir, exist_ok=True )
 
 sel_ops = Options()
-sel_ops.add_argument(f'--user-data-dir={temp_dir}')
+sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
