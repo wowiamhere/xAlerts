@@ -24,7 +24,7 @@ sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
-chrome_path = '/usr/bin/chromium-browser'
+chrome_path = '/usr/bin/chromium'
 sel_ops.binary_location = chrome_path
 
 # FOR TELEGRAM
