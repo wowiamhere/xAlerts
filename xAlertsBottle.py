@@ -11,7 +11,7 @@ import uuid
 
 # SELENIUM IMPORTS
 import undetected_chromedriver as uc
-import selenium
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
@@ -90,7 +90,7 @@ def new_alerts():
 		new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
 		
 		if ( len(new_alerts) > 0): 
-			driver = uc( options=sel_ops )
+			driver = uc.Chrome( options=sel_ops )
 			
 			for alert in new_alerts:
 
