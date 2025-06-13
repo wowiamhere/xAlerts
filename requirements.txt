@@ -1,5 +1,5 @@
 bottle
 requests
 beautifulsoup4
-selenium
 undetected_chromedriver
+selenium
