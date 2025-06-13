@@ -10,16 +10,15 @@ import tempfile
 import uuid
 
 # SELENIUM IMPORTS
-from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
-from selenium.webdriver.chrome.options import Options
 
 tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 os.makedirs( tmp_dir, exist_ok=True )
 
-sel_ops = Options()
+sel_ops = uc.ChromeOptions()
 sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
@@ -90,7 +89,7 @@ def new_alerts():
 		new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
 		
 		if ( len(new_alerts) > 0): 
-			driver = webdriver.Chrome( options=sel_ops )
+			driver = uc( options=sel_ops )
 			
 			for alert in new_alerts:
 
