@@ -24,8 +24,8 @@ sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
-# chrome_path = '/usr/bin/chromium'
-# sel_ops.binary_location = chrome_path
+chrome_path = '/usr/bin/chromium-browser'
+sel_ops.binary_location = chrome_path
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
@@ -151,4 +151,4 @@ def new_alerts():
 	return dict(tm = tm) 
 
 if __name__ == '__main__':
-	run( app=app, host='0.0.0.0', port=8000 )
+	run( app=app, host='0.0.0.0', port=8000, debug=False, reloader=False )
