@@ -95,10 +95,10 @@ def new_alerts():
 			for alert in new_alerts:
 
 				alert_txt = alert.text
-				alert_pass = re.search('PASS:.*\d\d\d\d', alert_txt )
+				alert_pass = re.search(r'PASS:.*\d\d\d\d', alert_txt )
 
 				if( alert_pass != None):
-					alert_pass = re.search('\d\d\d\d', alert_pass.group() ).group()
+					alert_pass = re.search(r'\d\d\d\d', alert_pass.group() ).group()
 					alert_url = alert.a.attrs['href']
 					
 					driver.get( alert_url )
