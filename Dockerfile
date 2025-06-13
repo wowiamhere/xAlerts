@@ -3,12 +3,12 @@ FROM python:3.11-slim
 
 # Install Chromium
 RUN apt-get update && apt-get install -y \
-    chromium-browser chromium-driver \
+    chromium chromium-driver \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variable for Selenium to find Chromium
-ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROME_BIN=/usr/bin/chromium
 
 # Install Python dependencies
 COPY requirements.txt .
