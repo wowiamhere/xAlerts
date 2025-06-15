@@ -1,3 +1,3 @@
 % for msg in content:
-	<p>{{msg}}</p>
+	<p>{{!msg}}</p>
 %end
