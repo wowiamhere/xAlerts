@@ -1,3 +1,3 @@
-% for msg in tm:
+% for msg in content:
 	<p>{{msg}}</p>
 %end
