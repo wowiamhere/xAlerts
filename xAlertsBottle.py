@@ -95,47 +95,44 @@ def new_alerts():
 			for alert in new_alerts:
 
 				alert_txt = alert.text
+				alert_url = alert.a.attrs['href']
 				alert_pass = re.search('PASS:.*\d\d\d\d', alert_txt )
+
+				driver.get( alert_url )
 
 				if( alert_pass != None):
 					alert_pass = re.search('\d\d\d\d', alert_pass.group() ).group()
-					alert_url = alert.a.attrs['href']
-					
-					driver.get( alert_url )
-
+				
 					pass_input = driver.find_elements(By.TAG_NAME, 'input')
 					pass_input[1].send_keys( alert_pass )
 					pass_input[2].click()
-					
-					WebDriverWait( driver, 2 ).until( EC.presence_of_element_located( (By.CSS_SELECTOR, '.entry-content > p') ) )
-
-					a_elements = driver.find_elements(By.TAG_NAME, 'a')
-					p_elements = driver.find_elements(By.CSS_SELECTOR, '.entry-content > p')
-
-
-					for p in p_elements:
-
-						a = p.find_elements( By.TAG_NAME, 'a')
-
-						if( len( a ) == 0 ):
-							telegram_message += p.text + '\n'
-							pass
-						else:
-							telegram_message += '\n'
-							for link in a:
-								telegram_message += link.get_attribute( 'outerHTML') + '\n\n'
-								pass
-
-
-					tel_resp = send_telegram_message( telegram_message )
-					tm.append( telegram_message )
-					telegram_message = ''
-
 				else:
-					telegram_message = 3*'--NO PASS!!!--' + '\n' + alert_txt
-					tel_resp = send_telegram_message( telegram_message )
-					tm.append( telegram_message )
-					telegram_message = ''
+					telegram_message = 3*'--NO PASS!!!--' + '\n'
+
+				WebDriverWait( driver, 2 ).until( EC.presence_of_element_located( (By.CSS_SELECTOR, '.entry-content > p') ) )
+
+				a_elements = driver.find_elements(By.TAG_NAME, 'a')
+				p_elements = driver.find_elements(By.CSS_SELECTOR, '.entry-content > p')
+
+
+				for p in p_elements:
+
+					a = p.find_elements( By.TAG_NAME, 'a')
+
+					if( len( a ) == 0 ):
+						telegram_message += p.text + '\n'
+						pass
+					else:
+						telegram_message += '\n'
+						for link in a:
+							telegram_message += link.get_attribute( 'outerHTML') + '\n\n'
+							pass
+
+
+				tel_resp = send_telegram_message( telegram_message )
+				tm.append( telegram_message )
+				telegram_message = ''
+
 
 			driver.quit()
 
