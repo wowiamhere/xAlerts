@@ -146,7 +146,7 @@ def new_alerts():
 		build_hash_arr( hshs )
 
 	#return dict(tm = tm) 
-	return template( 'new_alerts', content=telegram_message )
+	return template( 'new_alerts', content=tm )
 
 if __name__ == '__main__':
 	run( app=app, host='0.0.0.0', port=8000, debug=False, reloader=False )
