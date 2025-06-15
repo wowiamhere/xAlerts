@@ -77,7 +77,7 @@ def new_alerts():
 	global tm
 	global sel_ops
 
-	tm = []
+	tm = ''
 
 	alerts = get_html()
 
@@ -91,6 +91,7 @@ def new_alerts():
 		
 		if ( len(new_alerts) > 0): 
 			driver = webdriver.Chrome( options=sel_ops )
+			tm = ''
 			
 			for alert in new_alerts:
 
@@ -130,7 +131,8 @@ def new_alerts():
 
 
 				tel_resp = send_telegram_message( telegram_message )
-				tm.append( telegram_message )
+				#tm.append( telegram_message )
+				tm = telegram_message
 				telegram_message = ''
 
 
