@@ -16,14 +16,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 from selenium.webdriver.chrome.options import Options
 
-tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
-os.makedirs( tmp_dir, exist_ok=True )
+#tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
+#os.makedirs( tmp_dir, exist_ok=True )
 
 sel_ops = Options()
-sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
-sel_ops.add_argument('--no-sandbox')
-sel_ops.add_argument('--disable-dev-shm-usage')
+#sel_ops.add_argument('--no-sandbox')
+#sel_ops.add_argument('--disable-dev-shm-usage')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
