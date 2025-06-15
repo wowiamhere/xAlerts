@@ -131,6 +131,7 @@ def new_alerts():
 
 				tel_resp = send_telegram_message( telegram_message )
 				tm.append( telegram_message )
+				tm.append( '</br>')
 				telegram_message = ''
 
 
