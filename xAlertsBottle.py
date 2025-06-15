@@ -131,7 +131,6 @@ def new_alerts():
 
 				tel_resp = send_telegram_message( telegram_message )
 				tm.append( telegram_message )
-				tm.append( '</br>')
 				telegram_message = ''
 
 
@@ -145,7 +144,7 @@ def new_alerts():
 		build_hash_arr( hshs )
 
 	#return dict(tm = tm) 
-	return template( 'new_alerts', content=tm )
+	return template( 'new_alerts', content=telegram_message )
 
 if __name__ == '__main__':
 	run( app=app, host='0.0.0.0', port=8000, debug=False, reloader=False )
