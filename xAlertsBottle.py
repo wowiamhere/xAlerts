@@ -20,10 +20,10 @@ from selenium.webdriver.chrome.options import Options
 #os.makedirs( tmp_dir, exist_ok=True )
 
 sel_ops = Options()
-#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
-#sel_ops.add_argument('--no-sandbox')
-#sel_ops.add_argument('--disable-dev-shm-usage')
+sel_ops.add_argument('--no-sandbox')
+sel_ops.add_argument('--disable-dev-shm-usage')
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
