@@ -27,7 +27,7 @@ sel_ops.add_argument('--disable-dev-shm-usage')
 sel_ops.binary_location = '/nix/store/zi4f80l169xlmivz8vja8wlphq74qqk0-chromium-125.0.6422.141/bin/chromium'
 
 # FOR TELEGRAM
-bot_token = os.environ.get('telXBotToken')
+bot_token = os.getenv('telXBotToken')
 chat_id = '6451638522'
 telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
 telegram_message = ''
