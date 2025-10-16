@@ -9,9 +9,6 @@ import time
 import tempfile
 import uuid
 
-#######################
-# NEW
-#######################
 import unicodedata
 
 # SELENIUM IMPORTS
@@ -86,14 +83,11 @@ def new_alerts():
 
 	alerts = get_html()
 
-	#hshs = ['6930da77cbddbf51800bece2f01d7185207fb2ef692df14c899fef3ecc6b146']
 
-	#if( len(hshs) > 0 ):
 	if( len( alerts ) > 0 ):
 		build_hash_arr( cur_hshs )
 
 		state = [ st in hshs for st in cur_hshs ]		
-		#new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
 		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]		
 		if ( len(new_alerts) > 0): 
 			driver = webdriver.Chrome( options=sel_ops )
@@ -153,4 +147,4 @@ def new_alerts():
 	return dict(tm = tm) 
 
 if __name__ == '__main__':
-	run( app=app, host='localhost', port=8000, debug=True, reloader=True )
+	run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=False )
