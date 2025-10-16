@@ -9,6 +9,11 @@ import time
 import tempfile
 import uuid
 
+#######################
+# NEW
+#######################
+import unicodedata
+
 # SELENIUM IMPORTS
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -40,15 +45,14 @@ pass_code = None
 
 # GETS A NEW ALERTS PAGE AND RETRIEVES AND POPULATES THE ALERT VARIABLE
 def get_html():
-	r = requests.get('https://extrasalerts.com/la/casting/union')
+	#r = requests.get('https://extrasalerts.com/la/union/?utm_source=la&utm_medium=button&utm_campaign=site')
+	r = requests.get('https://extrasalerts.com/la/casting/?utm_source=extrasalerts&utm_medium=button&utm_campaign=site#browse')
 
 	soup = BeautifulSoup( r.text, 'html.parser' )
 
-	alerts_div = soup.css.select('div.wp-block-group > div.wp-block-group > div.wp-block-group')[0]
-	alerts_div = alerts_div.css.select('div', recursive=False )[0]
+	alerts_div = soup.css.select('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained');
 	
-	return alerts_div.css.select('div.wp-block-group > div.wp-block-group ')
-
+	return alerts_div
 
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
 def build_hash_arr(cont):
@@ -76,29 +80,30 @@ def new_alerts():
 	global pass_code
 	global tm
 	global sel_ops
+	global telegram_message
 
 	tm = []
 
 	alerts = get_html()
 
-	hshs = ['6930da77cbddbf51800bece2f01d7185207fb2ef692df14c899fef3ecc6b146', 'a18cf7fee1202e0e3a537faa5ec8ff9541b3d2add9dd3e16dbc7ae3a7d974d4', 'e5ab718b3aa6d6af0d8e1d5bd36a6347252b8eac4bf65b7ffe124d7431e226e6', 'bd527dd572db5c3a367f9258bf7aabc18918183382df0a6b86b68f46a898360e', '0ce33391508eb921599a37962b36c897a0b0d52094d5e65da88cc42e9210c9c6', '02f208d7ea69d8435e497857b724863993d4ba820def154fdb8ba98638b6ee06', 'c94ef83ec605e94dd158f11fecc1b861068d1d176ba32eb8258ff883f070af94', '838b82c680c96a9bb719a9c9f43e653bc447be6f196a2ed51a23bd164b435e48', 'bbfc174eadee19c8b5aa1651c261c023d252b3e6a036e2da545c30c2c646375c', 'f428f7e689be7c27fde1eba49b354f1787b61efe0440c23e3e266c52d6a83909', '14a6e6010ca6171f572b7bc939f319ad9a535e5ff89365a025e30f4b8144263f', 'a1ad9d5e6ea15a8cf2624f90757e455d79cf42c3e8d03479d848cae81e59fc4f']
+	#hshs = ['6930da77cbddbf51800bece2f01d7185207fb2ef692df14c899fef3ecc6b146']
 
-	if( len(hshs) > 0 ):
+	#if( len(hshs) > 0 ):
+	if( len( alerts ) > 0 ):
 		build_hash_arr( cur_hshs )
 
-		state = [ st in hshs for st in cur_hshs ]
-		new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
-		
+		state = [ st in hshs for st in cur_hshs ]		
+		#new_alerts = [ alerts[i].css.select('p')[1] for i in range( len(alerts) ) if state[i] == False ]
+		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]		
 		if ( len(new_alerts) > 0): 
 			driver = webdriver.Chrome( options=sel_ops )
-			
 			for alert in new_alerts:
 
-				alert_txt = alert.text
-				alert_pass = re.search('PASS:.*\d\d\d\d', alert_txt )
+				alert_txt = unicodedata.normalize( 'NFKD', alert.text )
+				alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt )
 
 				if( alert_pass != None):
-					alert_pass = re.search('\d\d\d\d', alert_pass.group() ).group()
+					alert_pass = re.search(r'\d\d\d\d', alert_pass.group() ).group()
 					alert_url = alert.a.attrs['href']
 					
 					driver.get( alert_url )
@@ -119,17 +124,16 @@ def new_alerts():
 
 						if( len( a ) == 0 ):
 							telegram_message += p.text + '\n'
-							pass
 						else:
 							telegram_message += '\n'
 							for link in a:
 								telegram_message += link.get_attribute( 'outerHTML') + '\n\n'
-								pass
 
 
 					tel_resp = send_telegram_message( telegram_message )
 					tm.append( telegram_message )
 					telegram_message = ''
+
 
 				else:
 					telegram_message = 3*'--NO PASS!!!--' + '\n' + alert_txt
@@ -149,4 +153,4 @@ def new_alerts():
 	return dict(tm = tm) 
 
 if __name__ == '__main__':
-	run( app=app, host='0.0.0.0', port=8000, debug=False, reloader=False )
+	run( app=app, host='localhost', port=8000, debug=True, reloader=True )
