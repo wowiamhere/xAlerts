@@ -27,6 +27,29 @@ sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
 
+# for selenium
+driver = None
+
+def get_driver():
+	global driver 
+	if driver is None:
+		driver = webdriver.Chrome( options=sel_ops )
+
+	return driver
+
+def cleanup_driver():
+    global driver
+    if driver is not None:
+        try:
+            driver.quit()
+        except Exception:
+            pass
+        driver = None
+
+atexit.register(cleanup_driver)	
+
+driver = get_driver()
+
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
 chat_id = '6451638522'
@@ -96,7 +119,7 @@ def new_alerts():
 		state = [ st in hshs for st in cur_hshs ]		
 		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]		
 		if ( len(new_alerts) > 0): 
-			driver = webdriver.Chrome( options=sel_ops )
+			#driver = webdriver.Chrome( options=sel_ops )
 			for alert in new_alerts:
 
 				alert_txt = unicodedata.normalize( 'NFKD', alert.text )
@@ -141,7 +164,7 @@ def new_alerts():
 					tm.append( telegram_message )
 					telegram_message = ''
 
-			driver.quit()
+			#driver.quit()
 
 		hshs = cur_hshs
 		cur_hshs = []
