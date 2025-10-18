@@ -55,13 +55,12 @@ def get_html():
 		union = re.search(r'(?<!non)union', txt )
 		if( union != None):
 			union_alerts.append( a )
-
 	return union_alerts
 
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
 def build_hash_arr(cont):
 	for alert in alerts:
-		alert_text = alert.css.select('p')[1].text
+		alert_text = unicodedata.normalize( 'NFKD', alert.text )
 		cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
 
 
