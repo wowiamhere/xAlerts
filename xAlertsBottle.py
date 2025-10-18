@@ -42,14 +42,21 @@ pass_code = None
 
 # GETS A NEW ALERTS PAGE AND RETRIEVES AND POPULATES THE ALERT VARIABLE
 def get_html():
-	#r = requests.get('https://extrasalerts.com/la/union/?utm_source=la&utm_medium=button&utm_campaign=site')
-	r = requests.get('https://extrasalerts.com/la/casting/?utm_source=extrasalerts&utm_medium=button&utm_campaign=site#browse')
+	r = requests.get('https://extrasalerts.com/la/casting')
 
 	soup = BeautifulSoup( r.text, 'html.parser' )
 
 	alerts_div = soup.css.select('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained');
+
+	union_alerts = []
 	
-	return alerts_div
+	for a in alerts_div:
+		txt = unicodedata.normalize( 'NFKD', a.text )
+		union = re.search(r'(?<!non)union', txt )
+		if( union != None):
+			union_alerts.append( a )
+
+	return union_alerts
 
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
 def build_hash_arr(cont):
