@@ -10,6 +10,7 @@ import tempfile
 import uuid
 
 import unicodedata
+import atexit
 
 # SELENIUM IMPORTS
 from selenium import webdriver
