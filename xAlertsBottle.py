@@ -18,6 +18,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 os.makedirs( tmp_dir, exist_ok=True )
@@ -27,14 +28,18 @@ sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
+sel_ops.add_argument('--disable-gpu')
+sel_ops.add_argument('--remote-debugging-port=9222')
 
 # for selenium
+service = Service('/usr/local/bin/chromedriver')
 driver = None
 
 def get_driver():
 	global driver 
+	global service
 	if driver is None:
-		driver = webdriver.Chrome( options=sel_ops )
+		driver = webdriver.Chrome( service=service, options=sel_ops )
 
 	return driver
 
