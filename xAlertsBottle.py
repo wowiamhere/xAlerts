@@ -61,20 +61,22 @@ def get_driver():
 	global driver 
 	global service
 	if driver is None:
+		logging.info('...........Getting Driver.')
 		driver = webdriver.Chrome( service=service, options=sel_ops )
-
+	logging.info('Driver loaded')
 	return driver
 
-def cleanup_driver():
+def quit_driver():
     global driver
     if driver is not None:
         try:
             driver.quit()
-        except Exception:
-            pass
+            logging.info('Driver QUIT.')
+        except Exception as e:
+        	logging.exception(f'Driver quit ERROR:-> {e}')
         driver = None
 
-atexit.register(cleanup_driver)	
+atexit.register(quit_driver)	
 
 def reset_driver():
 	global driver
@@ -83,8 +85,10 @@ def reset_driver():
 			driver.delete_all_cookies()
 			driver.execute_script('window.localStorage.clear();')
 			driver.execute_script('window.sessionStorage.clear();')
-		except Exception:
-			pass
+			logging.info('Driver RESET')
+		except Exception as e:
+			logging.exception(f'Driver reset ERROR:-> {e}')
+			
 
 
 
@@ -116,6 +120,9 @@ def get_html():
 		union = re.search(r'(?<!non)union', txt )
 		if( union != None):
 			union_alerts.append( a )
+
+	logging.info('union_alerts fetched (get_html())')
+
 	return union_alerts
 
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
@@ -138,6 +145,9 @@ app = Bottle()
 @app.route('/new')
 @view('new_alerts')
 def new_alerts():
+	
+	logging.info('/new route requested')
+
 	global hshs
 	global cur_hshs
 	global alerts
@@ -160,7 +170,6 @@ def new_alerts():
 		state = [ st in hshs for st in cur_hshs ]		
 		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]		
 		if ( len(new_alerts) > 0): 
-			#driver = webdriver.Chrome( options=sel_ops )
 			for alert in new_alerts:
 
 				alert_txt = unicodedata.normalize( 'NFKD', alert.text )
@@ -178,6 +187,7 @@ def new_alerts():
 					pass_input[2].click()
 					
 					WebDriverWait( driver, 2 ).until( EC.presence_of_element_located( (By.CSS_SELECTOR, '.entry-content > p') ) )
+					logging.info('DRIVER WAITS 2 SECONDS FOR ELEMENT .entry-content > p')
 
 					a_elements = driver.find_elements(By.TAG_NAME, 'a')
 					p_elements = driver.find_elements(By.CSS_SELECTOR, '.entry-content > p')
@@ -206,7 +216,6 @@ def new_alerts():
 					tm.append( telegram_message )
 					telegram_message = ''
 
-			#driver.quit()
 
 		hshs = cur_hshs
 		cur_hshs = []
