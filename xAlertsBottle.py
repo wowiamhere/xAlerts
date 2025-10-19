@@ -21,21 +21,25 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-#tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
-#os.makedirs( tmp_dir, exist_ok=True )
-#atexit.register(lambda: shutil.rmtree(tmp_dir, ignore_errors=True))
+tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
+os.makedirs( tmp_dir, exist_ok=True )
+atexit.register(lambda: shutil.rmtree(tmp_dir, ignore_errors=True))
 
 sel_ops = Options()
-#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless=new')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
 sel_ops.add_argument('--disable-gpu')
 sel_ops.add_argument('--remote-debugging-port=9222')
 
-options.add_argument('--user-data-dir=/opt/bottleApps/xAlerts/chrome_profile')
-options.add_argument('--profile-directory=Default')
+#sel_ops.add_argument('--user-data-dir=/opt/bottleApps/xAlerts/chrome_profile')
+sel_ops.add_argument('--profile-directory=Default')
 
+sel_ops.add_argument('--disk-cache-size=0')
+sel_ops.add_argument('--media-cache-size=0')
+sel_ops.add_argument('--disable-application-cache')
+sel_ops.add_argument('--desable-gpu-shader-disk-cache')
 
 # for selenium
 service = Service('/usr/local/bin/chromedriver')
@@ -129,6 +133,7 @@ def new_alerts():
 	global tm
 	global sel_ops
 	global telegram_message
+	global driver
 
 	tm = []
 
