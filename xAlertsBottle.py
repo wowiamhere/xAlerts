@@ -21,6 +21,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
+# FOR LOGGING
+import logging
+
+logging.basicConfig(
+	filename='/var/log/xAlerts.log',
+	level=logging.INFO,
+	format='%(asctime)s [%(levelname)s] $(message)s'
+)
+logging.info('xAlerts started.')
+
+
+# FOR TEMP DIRECTORY FOR DRIVER(CHROME)
 tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 os.makedirs( tmp_dir, exist_ok=True )
 atexit.register(lambda: shutil.rmtree(tmp_dir, ignore_errors=True))
