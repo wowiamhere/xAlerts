@@ -27,7 +27,7 @@ import logging
 logging.basicConfig(
 	filename='/var/log/xAlerts.log',
 	level=logging.INFO,
-	format='%(asctime)s [%(levelname)s] $(message)s'
+	format='%(asctime)s [%(levelname)s] %(message)s'
 )
 logging.info('xAlerts started.')
 
@@ -159,16 +159,19 @@ def new_alerts():
 
 	tm = []
 
-	alerts = get_html()
-
 	if driver is None:
 		driver = get_driver()
 
+	alerts = get_html()
+
+
 	if( len( alerts ) > 0 ):
+
 		build_hash_arr( cur_hshs )
 
 		state = [ st in hshs for st in cur_hshs ]		
-		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]		
+		new_alerts = [ alerts[i] for i in range( len(alerts) ) if state[i] == False ]
+
 		if ( len(new_alerts) > 0): 
 			for alert in new_alerts:
 
@@ -205,22 +208,28 @@ def new_alerts():
 								telegram_message += link.get_attribute( 'outerHTML') + '\n\n'
 
 
+					logging.info('Sending Telegram Message')
+
 					tel_resp = send_telegram_message( telegram_message )
 					tm.append( telegram_message )
 					telegram_message = ''
 
 
 				else:
+					logging.info('Sending Telegram Message (NO PASS)')
+
 					telegram_message = 3*'--NO PASS!!!--' + '\n' + alert_txt
 					tel_resp = send_telegram_message( telegram_message )
 					tm.append( telegram_message )
 					telegram_message = ''
 
 
+		logging.info('New alert Telegram message send and ready to display under /new.')
 		hshs = cur_hshs
 		cur_hshs = []
 
 	else:
+		logging.info('No new alerts found')
 		new_alerts = []
 		build_hash_arr( hshs )
 
