@@ -8,6 +8,7 @@ import re
 import time
 import tempfile
 import uuid
+import shutil
 
 import unicodedata
 import atexit
@@ -20,16 +21,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
-os.makedirs( tmp_dir, exist_ok=True )
+#tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
+#os.makedirs( tmp_dir, exist_ok=True )
+#atexit.register(lambda: shutil.rmtree(tmp_dir, ignore_errors=True))
 
 sel_ops = Options()
-sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
-sel_ops.add_argument('--headless')
+#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+sel_ops.add_argument('--headless=new')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
 sel_ops.add_argument('--disable-gpu')
 sel_ops.add_argument('--remote-debugging-port=9222')
+
+options.add_argument('--user-data-dir=/opt/bottleApps/xAlerts/chrome_profile')
+options.add_argument('--profile-directory=Default')
+
 
 # for selenium
 service = Service('/usr/local/bin/chromedriver')
@@ -54,7 +60,17 @@ def cleanup_driver():
 
 atexit.register(cleanup_driver)	
 
-driver = get_driver()
+def reset_driver():
+	global driver
+	if driver:
+		try:
+			driver.delete_all_cookies()
+			driver.execute_script('window.localStorage.clear();')
+			driver.execute_script('window.sessionStorage.clear();')
+		except Exception:
+			pass
+
+
 
 # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
@@ -118,6 +134,8 @@ def new_alerts():
 
 	alerts = get_html()
 
+	if driver is None:
+		driver = get_driver()
 
 	if( len( alerts ) > 0 ):
 		build_hash_arr( cur_hshs )
@@ -135,6 +153,7 @@ def new_alerts():
 					alert_pass = re.search(r'\d\d\d\d', alert_pass.group() ).group()
 					alert_url = alert.a.attrs['href']
 					
+					reset_driver()
 					driver.get( alert_url )
 
 					pass_input = driver.find_elements(By.TAG_NAME, 'input')
