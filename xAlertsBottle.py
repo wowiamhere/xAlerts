@@ -26,8 +26,8 @@ import logging
 
 logging.basicConfig(
 	filename='/var/log/xAlerts.log',
-	level=logging.INFO,
-	format='%(asctime)s [%(levelname)s] %(message)s'
+	level=logging.DEBUG,
+	format='%(process)d %(processName)s %(thread)d %(threadName)s %(asctime)s [%(levelname)s] %(message)s \n'
 )
 logging.info('xAlerts started.')
 
@@ -35,15 +35,26 @@ logging.info('xAlerts started.')
 # FOR TEMP DIRECTORY FOR DRIVER(CHROME)
 tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 os.makedirs( tmp_dir, exist_ok=True )
-atexit.register(lambda: shutil.rmtree(tmp_dir, ignore_errors=True))
+
+def clean_tmp():
+	try:
+		shutil.rmtree( tmp_dir )
+		logging.info( 'tmp removed' )
+	except Exception as e:
+		logging.exception(r'Error removing tmp: -> {e}')
+
+atexit.register( clean_tmp )
 
 sel_ops = Options()
 sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
-sel_ops.add_argument('--headless=new')
+sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
 sel_ops.add_argument('--disable-gpu')
-sel_ops.add_argument('--remote-debugging-port=9222')
+sel_ops.add_argument('--disable-software-rasterizer')
+#sel_ops.add_argument('--remote-debugging-port=9222')
+#sel_ops.add_argument('--single-process')
+#sel_ops.add_argument('--no-zygote')
 
 #sel_ops.add_argument('--user-data-dir=/opt/bottleApps/xAlerts/chrome_profile')
 sel_ops.add_argument('--profile-directory=Default')
@@ -51,7 +62,18 @@ sel_ops.add_argument('--profile-directory=Default')
 sel_ops.add_argument('--disk-cache-size=0')
 sel_ops.add_argument('--media-cache-size=0')
 sel_ops.add_argument('--disable-application-cache')
-sel_ops.add_argument('--desable-gpu-shader-disk-cache')
+sel_ops.add_argument('--disable-gpu-shader-disk-cache')
+sel_ops.add_argument('--disable-ipv6')
+sel_ops.add_argument('--host-resolver-rules=MAP localhost 127.0.0.1')
+sel_ops.add_argument('--disable-background-networking')
+sel_ops.add_argument('--disable-background-time-throttling')
+sel_ops.add_argument('--disable-backgrounding-occluded-windows')
+sel_ops.add_argument('--disable-renderer-backgrounding')
+sel_ops.add_argument('--no-first-run')
+sel_ops.add_argument('--no-default-browser-check')
+sel_ops.add_argument('--disable-default-apps')
+sel_ops.add_argument('--disable-extensions')
+sel_ops.add_argument('--mute-audio')
 
 # for selenium
 service = Service('/usr/local/bin/chromedriver')
