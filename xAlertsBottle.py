@@ -32,11 +32,11 @@ logging.basicConfig(
 logging.info('xAlerts started.')
 
 
+'''
 # FOR TEMP DIRECTORY FOR DRIVER(CHROME)
 #tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
 #os.makedirs( tmp_dir, exist_ok=True )
 
-'''
 def clean_tmp():
 	try:
 		shutil.rmtree( tmp_dir )
@@ -45,32 +45,31 @@ def clean_tmp():
 		logging.exception(r'Error removing tmp: -> {e}')
 
 atexit.register( clean_tmp )
+
+#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+#sel_ops.add_argument('--remote-debugging-port=9222')
+#sel_ops.add_argument('--single-process')
+#sel_ops.add_argument('--no-zygote')
 '''
 
 sel_ops = Options()
-#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+sel_ops.add_argument('--disable-ipv6')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
 sel_ops.add_argument('--disable-gpu')
+sel_ops.add_argument('--disable-gpu-shader-disk-cache')
 sel_ops.add_argument('--disable-software-rasterizer')
-#sel_ops.add_argument('--remote-debugging-port=9222')
-#sel_ops.add_argument('--single-process')
-#sel_ops.add_argument('--no-zygote')
-
+sel_ops.add_argument('--disable-renderer-backgrounding')
 sel_ops.add_argument('--user-data-dir=/tmp/xAlerts/chrome-profile')
 sel_ops.add_argument('--profile-directory=Default')
-
+sel_ops.add_argument('--host-resolver-rules=MAP localhost 127.0.0.1')
 sel_ops.add_argument('--disk-cache-size=0')
 sel_ops.add_argument('--media-cache-size=0')
 sel_ops.add_argument('--disable-application-cache')
-sel_ops.add_argument('--disable-gpu-shader-disk-cache')
-sel_ops.add_argument('--disable-ipv6')
-sel_ops.add_argument('--host-resolver-rules=MAP localhost 127.0.0.1')
 sel_ops.add_argument('--disable-background-networking')
 sel_ops.add_argument('--disable-background-time-throttling')
 sel_ops.add_argument('--disable-backgrounding-occluded-windows')
-sel_ops.add_argument('--disable-renderer-backgrounding')
 sel_ops.add_argument('--no-first-run')
 sel_ops.add_argument('--no-default-browser-check')
 sel_ops.add_argument('--disable-default-apps')
@@ -116,7 +115,6 @@ def reset_driver():
 		except Exception as e:
 			logging.exception(f'Driver reset ERROR:-> {e}')
 			
-
 
 
 # FOR TELEGRAM
@@ -186,11 +184,7 @@ def new_alerts():
 
 	tm = []
 
-	if driver is None:
-		driver = get_driver()
-
 	alerts = get_html()
-	reset_driver()
 
 	if( len( alerts ) > 0 ):
 
@@ -250,7 +244,7 @@ def new_alerts():
 					telegram_message = ''
 
 
-		logging.info('New alert Telegram message send and ready to display under /new.')
+		logging.info('New alert Telegram message sent and ready to display under /new.')
 		hshs = cur_hshs
 		cur_hshs = []
 
@@ -259,7 +253,9 @@ def new_alerts():
 		new_alerts = []
 		build_hash_arr( hshs )
 
+	#reset_driver()
 	return dict(tm = tm) 
 
 if __name__ == '__main__':
+	driver = get_driver()
 	run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=False )
