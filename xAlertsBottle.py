@@ -9,7 +9,7 @@ import time
 import tempfile
 import uuid
 import shutil
-
+from threading import Lock
 import unicodedata
 import atexit
 
@@ -33,9 +33,10 @@ logging.info('xAlerts started.')
 
 
 # FOR TEMP DIRECTORY FOR DRIVER(CHROME)
-tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
-os.makedirs( tmp_dir, exist_ok=True )
+#tmp_dir = os.path.join( tempfile.gettempdir(), str( uuid.uuid4() ) )
+#os.makedirs( tmp_dir, exist_ok=True )
 
+'''
 def clean_tmp():
 	try:
 		shutil.rmtree( tmp_dir )
@@ -44,9 +45,10 @@ def clean_tmp():
 		logging.exception(r'Error removing tmp: -> {e}')
 
 atexit.register( clean_tmp )
+'''
 
 sel_ops = Options()
-sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
+#sel_ops.add_argument(f'--user-data-dir={tmp_dir}')
 sel_ops.add_argument('--headless')
 sel_ops.add_argument('--no-sandbox')
 sel_ops.add_argument('--disable-dev-shm-usage')
@@ -56,7 +58,7 @@ sel_ops.add_argument('--disable-software-rasterizer')
 #sel_ops.add_argument('--single-process')
 #sel_ops.add_argument('--no-zygote')
 
-#sel_ops.add_argument('--user-data-dir=/opt/bottleApps/xAlerts/chrome_profile')
+sel_ops.add_argument('--user-data-dir=/tmp/xAlerts/chrome-profile')
 sel_ops.add_argument('--profile-directory=Default')
 
 sel_ops.add_argument('--disk-cache-size=0')
@@ -77,14 +79,17 @@ sel_ops.add_argument('--mute-audio')
 
 # for selenium
 service = Service('/usr/local/bin/chromedriver')
+
 driver = None
+driver_lock = Lock()
 
 def get_driver():
 	global driver 
 	global service
-	if driver is None:
-		logging.info('...........Getting Driver.')
-		driver = webdriver.Chrome( service=service, options=sel_ops )
+	with driver_lock:
+		if driver is None:
+			logging.info('...........Getting Driver.')
+			driver = webdriver.Chrome( service=service, options=sel_ops )
 	logging.info('Driver loaded')
 	return driver
 
@@ -129,7 +134,7 @@ pass_code = None
 
 # GETS A NEW ALERTS PAGE AND RETRIEVES AND POPULATES THE ALERT VARIABLE
 def get_html():
-	r = requests.get('https://extrasalerts.com/la/casting')
+	r = requests.get('https://extrasalerts.com/la/casting/')
 
 	soup = BeautifulSoup( r.text, 'html.parser' )
 
@@ -185,7 +190,7 @@ def new_alerts():
 		driver = get_driver()
 
 	alerts = get_html()
-
+	reset_driver()
 
 	if( len( alerts ) > 0 ):
 
@@ -204,16 +209,15 @@ def new_alerts():
 					alert_pass = re.search(r'\d\d\d\d', alert_pass.group() ).group()
 					alert_url = alert.a.attrs['href']
 					
-					reset_driver()
 					driver.get( alert_url )
 
 					pass_input = driver.find_elements(By.TAG_NAME, 'input')
 					pass_input[1].send_keys( alert_pass )
 					pass_input[2].click()
-					
-					WebDriverWait( driver, 2 ).until( EC.presence_of_element_located( (By.CSS_SELECTOR, '.entry-content > p') ) )
-					logging.info('DRIVER WAITS 2 SECONDS FOR ELEMENT .entry-content > p')
 
+					logging.info('DRIVER WAITS 2 SECONDS FOR ELEMENT .entry-content > p')
+					WebDriverWait( driver, 2 ).until( EC.presence_of_element_located( (By.CSS_SELECTOR, '.entry-content > p') ) )
+					
 					a_elements = driver.find_elements(By.TAG_NAME, 'a')
 					p_elements = driver.find_elements(By.CSS_SELECTOR, '.entry-content > p')
 
