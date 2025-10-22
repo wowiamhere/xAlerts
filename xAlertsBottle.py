@@ -111,6 +111,8 @@ def check_for_new_alerts():
                             for l in el.find('a'):
                                 telegram_message += l.html + '\n\n'
 
+                    telegram_message += '-' * 40
+
             telegram_message += '\n--- NO PASSWORD ---\n'
             
             telegram_message += alert.text + '\n'
