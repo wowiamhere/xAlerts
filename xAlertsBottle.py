@@ -94,8 +94,8 @@ def check_for_new_alerts():
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
 
                 if alert_pass:
-                    telegram_message += '---NEW---' * 2 + '\n\n'
-                    
+                    #telegram_message += '---NEW---' *  + '\n\n'
+
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
 
                     	# comes in the form https://ip.com/la/casting/23434?askdfdk
@@ -113,6 +113,11 @@ def check_for_new_alerts():
                             for l in el.find('a'):
                                 telegram_message += l.html + '\n\n'
 
+                    r = send_telegram_message(telegram_message)
+                    logging.info('Telegram message sent for new alert.')
+                    tm.append(telegram_message)
+                    telegram_message = ''
+
                 else:
                     telegram_message += '\n--- NO PASSWORD ---\n'
                     telegram_message += alert.text + '\n'
@@ -123,11 +128,11 @@ def check_for_new_alerts():
             
                     telegram_message += '-' * 30
 
-
-            r = send_telegram_message(telegram_message)
-            tm.append(telegram_message)
-            logging.info('Telegram message sent for new alert.')
-            telegram_message = ''
+            if telegram_message not '':
+                r = send_telegram_message(telegram_message)
+                tm.append(telegram_message)
+                telegram_message = ''
+                logging.info('Telegram message for old alert.')
 
             hshs = cur_hshs
 
