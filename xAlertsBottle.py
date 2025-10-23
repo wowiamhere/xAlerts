@@ -116,11 +116,11 @@ def check_for_new_alerts():
                     telegram_message += '\n--- NO PASSWORD ---\n'
                     telegram_message += alert.text + '\n'
 
-            if alert.links:
-                for l in alert.find('a'):
-                    telegram_message += '\n\n' + l.html + '\n\n'
+                    if alert.links:
+                        for l in alert.find('a'):
+                            telegram_message += '\n\n' + l.html + '\n\n'
             
-            telegram_message += '-' * 30
+                    telegram_message += '-' * 30
 
 
             r = send_telegram_message(telegram_message)
