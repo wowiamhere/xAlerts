@@ -127,10 +127,10 @@ def check_for_new_alerts():
                             telegram_message += '\n\n' + l.html + '\n\n'
             
                     telegram_message += '-' * 30
+                    tm.append(alert.text)
 
             if telegram_message:
                 r = send_telegram_message(telegram_message)
-                tm.append(alert.text)
                 telegram_message = ''
                 logging.info('Telegram message for old alert.')
 

@@ -1,3 +1,7 @@
+<div>
 % for msg in tm:
-	<p>{{msg}}</p>
+		<p>{{msg}}</p>
 %end
+</div>
+<hr>
+<hr>
