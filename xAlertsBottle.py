@@ -94,6 +94,8 @@ def check_for_new_alerts():
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
 
                 if alert_pass:
+                    telegram_message += '---NEW---' * 2 + '\n\n'
+                    
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
 
                     	# comes in the form https://ip.com/la/casting/23434?askdfdk
@@ -111,7 +113,6 @@ def check_for_new_alerts():
                             for l in el.find('a'):
                                 telegram_message += l.html + '\n\n'
 
-                    telegram_message += '-' * 40 + '\n\n'
                 else:
                     telegram_message += '\n--- NO PASSWORD ---\n'
                     telegram_message += alert.text + '\n'
