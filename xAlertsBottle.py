@@ -113,7 +113,7 @@ def check_for_new_alerts():
                             for l in el.find('a'):
                                 telegram_message += l.html + '\n\n'
 
-                    r = send_telegram_message(telegram_message)
+                    send_telegram_message(telegram_message)
                     logging.info('Telegram message sent for new alert.')
                     tm.extend([el.text for el in elements])
                     telegram_message = ''
@@ -130,7 +130,7 @@ def check_for_new_alerts():
                     tm.append(alert.text)
 
             if telegram_message:
-                r = send_telegram_message(telegram_message)
+                send_telegram_message(telegram_message)
                 telegram_message = ''
                 logging.info('Telegram message for old alert.')
 
