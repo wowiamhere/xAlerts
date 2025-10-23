@@ -147,7 +147,7 @@ def background_worker():
 
 # --- Start background thread when app starts ---
 threading.Thread(target=background_worker, daemon=True).start()
-background_worker()
+
 # THE HTTP APPLICATION
 app = Bottle()
 
