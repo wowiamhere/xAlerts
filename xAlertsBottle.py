@@ -115,7 +115,7 @@ def check_for_new_alerts():
 
                     r = send_telegram_message(telegram_message)
                     logging.info('Telegram message sent for new alert.')
-                    tm.append(telegram_message)
+                    tm.append(elements)
                     telegram_message = ''
 
                 else:
@@ -130,7 +130,7 @@ def check_for_new_alerts():
 
             if telegram_message:
                 r = send_telegram_message(telegram_message)
-                tm.append(telegram_message)
+                tm.append(alert)
                 telegram_message = ''
                 logging.info('Telegram message for old alert.')
 
