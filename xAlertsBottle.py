@@ -128,7 +128,7 @@ def check_for_new_alerts():
             
                     telegram_message += '-' * 30
 
-            if telegram_message not '':
+            if telegram_message:
                 r = send_telegram_message(telegram_message)
                 tm.append(telegram_message)
                 telegram_message = ''
