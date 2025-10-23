@@ -18,7 +18,7 @@ bot_token = os.environ.get('telXBotToken')
 chat_id = '6451638522'
 telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
 telegram_message = ''
-tm = []
+for_view = dict()
 
 # FOR KEEPING TRACK OF NEW ALERTS
 hshs = []
@@ -90,11 +90,11 @@ def check_for_new_alerts():
                 return
 
             for alert in new_alerts:
+                for_view.clear()
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
 
                 if alert_pass:
-                    #telegram_message += '---NEW---' *  + '\n\n'
 
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
 
@@ -106,16 +106,19 @@ def check_for_new_alerts():
                     r = session.get( alert_url )
 
                     elements = r.html.find('.entry-content > p')
+
                     for el in elements:
+                        for_view['new'] += el.html
                         if not el.links:
                             telegram_message += el.text + '\n\n'
                         else:
                             for l in el.find('a'):
                                 telegram_message += l.html + '\n\n'
 
+
                     send_telegram_message(telegram_message)
                     logging.info('Telegram message sent for new alert.')
-                    tm.extend([el.text for el in elements])
+                    #tm.extend([el.text for el in elements])
                     telegram_message = ''
 
                 else:
@@ -124,10 +127,10 @@ def check_for_new_alerts():
 
                     if alert.links:
                         for l in alert.find('a'):
-                            telegram_message += '\n\n' + l.html + '\n\n'
+                            telegram_message += '\n\n' + l.html + '\n'
             
                     telegram_message += '-' * 30
-                    tm.append(alert.text)
+                    for_view['no_pass'] += alert.html
 
             if telegram_message:
                 send_telegram_message(telegram_message)
@@ -163,7 +166,7 @@ app = Bottle()
 def new_alerts():
     logging.info('/new route requested - lightweight response')
     # Just render whatever was last collected
-    return dict(tm=tm)
+    return dict(quit_driver=tm)
 
 if __name__ == '__main__':
     run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=False )
