@@ -166,7 +166,7 @@ app = Bottle()
 def new_alerts():
     logging.info('/new route requested - lightweight response')
     # Just render whatever was last collected
-    return dict(quit_driver=tm)
+    return dict(xalertx=for_view)
 
 if __name__ == '__main__':
     run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=False )
