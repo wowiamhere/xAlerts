@@ -112,10 +112,10 @@ def check_for_new_alerts():
                                 telegram_message += l.html + '\n\n'
 
                     telegram_message += '-' * 40 + '\n\n'
+                else:
+                    telegram_message += '\n--- NO PASSWORD ---\n'
+                    telegram_message += alert.text + '\n'
 
-            telegram_message += '\n--- NO PASSWORD ---\n'
-            
-            telegram_message += alert.text + '\n'
             if alert.links:
                 for l in alert.find('a'):
                     telegram_message += '\n\n' + l.html + '\n\n'
