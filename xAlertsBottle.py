@@ -71,6 +71,10 @@ check_lock = threading.Lock()
 def check_for_new_alerts():
     global hshs, cur_hshs, alerts, tm, telegram_message, session
 
+    for_view.clear()
+    for_view['new'] = ''
+    for_view['no_pass'] = ''
+
     with check_lock:
         logging.info('Background check_for_new_alerts() started')
         try:
@@ -91,9 +95,6 @@ def check_for_new_alerts():
 
             for alert in new_alerts:
 
-                for_view.clear()
-                for_view['new'] = ''
-                for_view['no_pass'] = ''
 
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
