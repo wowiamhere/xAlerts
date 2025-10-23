@@ -1,7 +1,9 @@
 <div>
-% for msg in tm:
-		{{msg}}
-%end
+{{!xalerts['new']}}
+
 </div>
 <hr>
 <hr>
+<p>
+{{!xalerts['no_pass']}}
+</p>

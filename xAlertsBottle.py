@@ -90,10 +90,14 @@ def check_for_new_alerts():
                 return
 
             for alert in new_alerts:
+
                 for_view.clear()
+                for_view['new'] = ''
+                for_view['no_pass'] = ''
+
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
-
+                breakpoint()
                 if alert_pass:
 
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
@@ -164,9 +168,11 @@ app = Bottle()
 @app.route('/new')
 @view('new_alerts')
 def new_alerts():
+    global for_view
+
     logging.info('/new route requested - lightweight response')
     # Just render whatever was last collected
-    return dict(xalertx=for_view)
+    return dict(xalerts=for_view)
 
 if __name__ == '__main__':
-    run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=False )
+    run( app=app, host='0.0.0.0', port=8000, debug=True, reloader=True )
