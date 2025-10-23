@@ -97,7 +97,7 @@ def check_for_new_alerts():
 
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
-                breakpoint()
+
                 if alert_pass:
 
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
