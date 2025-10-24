@@ -1,5 +1,5 @@
 
-from bottle import route, run, SimpleTemplate, template, Bottle, view, redirect
+from bottle import route, run, SimpleTemplate, template, Bottle, view, redirect, request
 from bs4 import BeautifulSoup
 from threading import Lock
 from urllib.parse import urlparse, parse_qs, urlencode
@@ -190,7 +190,7 @@ def new_alerts():
 def redirect_email():
     email = request.query.get('to')
     subject = request.query.get('subject', '')
-    body = request.query.get('body', '')
+    body = urlencode( request.query.get('body', '') )
     mailto = f"mailto:{email}?subject={subject}&body={body}"
     redirect(mailto)
 
