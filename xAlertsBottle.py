@@ -1,7 +1,8 @@
 
-from bottle import route, run, SimpleTemplate, template, Bottle, view
-from threading import Lock
+from bottle import route, run, SimpleTemplate, template, Bottle, view, redirect
 from bs4 import BeautifulSoup
+from threading import Lock
+from urllib.parse import urlparse, parse_qs, urlencode
 
 import os, time, hashlib, re, tempfile, uuid, shutil, threading, unicodedata, atexit, logging, requests_html
 
@@ -69,12 +70,11 @@ CHECK_INTERVAL = 30  # seconds
 check_lock = threading.Lock()
 
 def check_for_new_alerts():
-    global hshs, cur_hshs, alerts, tm, telegram_message, session
+    global hshs, cur_hshs, alerts, tm, telegram_message, session, for_view
 
     for_view.clear()
     for_view['new'] = ''
     for_view['no_pass'] = ''
-
     with check_lock:
         logging.info('Background check_for_new_alerts() started')
         try:
@@ -103,7 +103,7 @@ def check_for_new_alerts():
 
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
 
-                    	# comes in the form https://ip.com/la/casting/23434?askdfdk
+                        # comes in the form https://ip.com/la/casting/23434?askdfdk
                     alert_url = list( alert.links )[0].split('?')[0]
                     data_for_post = dict( redirect_to=alert_url, post_password=alert_pass, Submit='Enter')
                     url_for_access = 'https://2025.extrasalerts.com/wp-pass.php'
@@ -114,16 +114,27 @@ def check_for_new_alerts():
 
                     for el in elements:
                         for_view['new'] += el.html
-                        if not el.links:
+                        if not el.find('a'):
                             telegram_message += el.text + '\n\n'
                         else:
                             for l in el.find('a'):
-                                telegram_message += l.html + '\n\n'
+                                l_href  = l.attrs['href']
+                                if ( l_href.find('mailto') == 0):
+                                    l_parse = urlparse( l_href )
+                                    l_to = l_parse.path
+                                    l_subject = parse_qs( l_parse.query )['subject'][0]
+                                    l_subject = l_subject[ l_subject.find('RE:')+3:].strip()
+                                    l_url_base = 'https://64.181.234.48:8000/email'
+                                    l_url_params = urlencode( { 'to': l_to, 'subject': l_subject } )
+                                    l_url = f'{l_url_base}?{l_url_params}'
+                                    telegram_message += f'<a href="{l_url}">SUBMIT</a>'
+                                    breakpoint()
+                                else:
+                                    telegram_message += l.html + '\n\n'
 
 
-                    send_telegram_message(telegram_message)
+                    r = send_telegram_message(telegram_message)
                     logging.info('Telegram message sent for new alert.')
-                    #tm.extend([el.text for el in elements])
                     telegram_message = ''
 
                 else:
@@ -174,6 +185,16 @@ def new_alerts():
     logging.info('/new route requested - lightweight response')
     # Just render whatever was last collected
     return dict(xalerts=for_view)
+
+
+@app.route('/email')
+def redirect_email():
+    email = request.query.get('to')
+    subject = request.query.get('subject', '')
+    body = request.query.get('body', '')
+    mailto = f"mailto:{email}?subject={subject}&body={body}"
+    redirect(mailto)
+
 
 if __name__ == '__main__':
     run( app=app, host='0.0.0.0', port=8000, debug=False, reloader=False )
