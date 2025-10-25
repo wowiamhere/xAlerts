@@ -173,10 +173,6 @@ def check_for_new_alerts():
                 telegram_message = ''
                 logging.info('TELEGRAM MESSAGE (BULK) SENT.')
 
-'''
-            hshs = cur_hshs
-            cur_hshs = []
-'''
 
         except Exception as e:
             logging.exception(f'Background check_for_new_alerts() error: {e}')
