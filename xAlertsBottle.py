@@ -72,29 +72,33 @@ check_lock = threading.Lock()
 def check_for_new_alerts():
     global hshs, cur_hshs, alerts, tm, telegram_message, session, for_view
 
-    for_view.clear()
-    for_view['new'] = ''
-    for_view['no_pass'] = ''
     with check_lock:
         logging.info('Background check_for_new_alerts() started')
         try:
             alerts = get_html()
 
             if len(alerts) == 0:
-                logging.info('No alerts fetched')
+                logging.info('NOTHING FOUND OR FETCHED!!!!!')
                 return
 
+                #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
             build_hash_arr(cur_hshs)
             state = [st in hshs for st in cur_hshs]
             new_alerts = [alerts[i] for i in range(len(alerts)) if not state[i]]
 
+                #   IF NO NEW ALERTS, UPDATE THE STORED LIST OF HASHES AND RETURN
             if len(new_alerts) == 0:
-                logging.info('No NEW alerts detected')
+                logging.info('NO NEW alerts detected')
                 hshs = cur_hshs
                 return
 
+                # IF NEW ALERTS, FIGURE OUT IF THEY HAVE A PASSWORD AND LINK TO FOLLOW, OR THEY ARE JUST INFORMATIONAL
+                # SEND A TELEGRAM MESSAGE PER ALERT
             for alert in new_alerts:
 
+                for_view.clear()
+                for_view['new'] = ''
+                for_view['no_pass'] = ''
 
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
@@ -103,15 +107,21 @@ def check_for_new_alerts():
 
                     alert_pass = re.search(r'\d\d\d\d', alert_pass.group()).group()
 
-                        # comes in the form https://ip.com/la/casting/23434?askdfdk
+                        # GET THE LINK FROM AN ALERT, SYNTAX https://ip.com/la/casting/23434?askdfdk.....
+                        # BUILD A REQUEST FOR POSTING WITH THE PASSWORD TO GET ACCESS TO ALERT
                     alert_url = list( alert.links )[0].split('?')[0]
                     data_for_post = dict( redirect_to=alert_url, post_password=alert_pass, Submit='Enter')
                     url_for_access = 'https://2025.extrasalerts.com/wp-pass.php'
+
+                        # POST FOR ACCESS AND GET THE RESOURCE
                     r = session.post( url_for_access , data=data_for_post )
                     r = session.get( alert_url )
 
                     elements = r.html.find('.entry-content > p')
 
+                        # SET THE VIEW
+                        # IF THE ELEMENT DOES NOT HAVE A LINK SET THE TELEGRAM MESSAGE WITH THE TEXT OF THE ALERT
+                        # IF THE ELMENT HAS A LINK, HANDLE MAILTO AND REGULAR LNK
                     for el in elements:
                         for_view['new'] += el.html
                         if not el.find('a'):
@@ -125,15 +135,15 @@ def check_for_new_alerts():
                                     l_subject = parse_qs( l_parse.query )['subject'][0]
                                     l_subject = l_subject[ l_subject.find('RE:')+3:].strip()
                                     l_url_base = 'http://64.181.234.48:8000/email'
-                                    l_url_params = urlencode( { 'to': l_to, 'subject': l_subject } )
+                                    l_url_params = urlencode( { 'to': l_to, 'subject': l_sujbect } )
                                     l_url = f'{l_url_base}?{l_url_params}'
-                                    telegram_message += f'<a href="{l_url}">SUBMIT</a>'
+                                    telegram_message += f'<a href="{l_url}">SUBMIT</a>\n\n'
                                 else:
                                     telegram_message += l.html + '\n\n'
 
 
                     r = send_telegram_message(telegram_message)
-                    logging.info('Telegram message sent for new alert.')
+                    logging.info('TELEGRAM MESSAGE FOR SINGLE ALERT SENT.')
                     telegram_message = ''
 
                 else:
@@ -147,12 +157,15 @@ def check_for_new_alerts():
                     telegram_message += '-' * 30
                     for_view['no_pass'] += alert.html
 
-            if telegram_message:
-                send_telegram_message(telegram_message)
-                telegram_message = ''
-                logging.info('Telegram message for old alert.')
+
+                if telegram_message:
+                    send_telegram_message(telegram_message)
+                    telegram_message = ''
+                    logging.info('TELEGRAM MESSAGE (BULK) SENT.')
+
 
             hshs = cur_hshs
+            cur_hshs = []
 
         except Exception as e:
             logging.exception(f'Background check_for_new_alerts() error: {e}')
