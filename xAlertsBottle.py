@@ -32,7 +32,7 @@ session = requests_html.HTMLSession()
 
 # GETS A NEW ALERTS PAGE AND RETRIEVES AND POPULATES THE ALERT VARIABLE
 def get_html():
-    global session
+    global session, alerts, hshs, cur_hshs
     r = session.get('https://extrasalerts.com/la/casting/')
 
     alerts_div = r.html.find('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained');
@@ -42,8 +42,19 @@ def get_html():
     for a in alerts_div:
         txt = unicodedata.normalize( 'NFKD', a.text )
         union = re.search(r'(?<!non)union', txt )
-        if( union != None):
+        if union not None:
             union_alerts.append( a )
+
+'''
+        #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
+    build_hash_arr(cur_hshs, union_alerts)
+    state = [st in hshs for st in cur_hshs]
+    alerts = [alerts[i] for i in range(len(alerts)) if not state[i]]
+
+    logging.info('NEW ALERTS fetched by get_html() ')
+    hshs = cur_hshs
+    cur_hshs = []
+'''
 
     logging.info('union_alerts fetched (get_html())')
 
@@ -51,9 +62,17 @@ def get_html():
 
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
 def build_hash_arr(cont):
+    global alerts
     for alert in alerts:
         alert_text = unicodedata.normalize( 'NFKD', alert.text )
         cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
+
+'''
+def build_hash_arr(cont, to_hash):
+    for alert in to_hash:
+        alert_text = unicodedata.normalize( 'NFKD', alert.text )
+        cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
+'''
 
 
 # ONCE A NEW ALERT IS DETECTED IT SENDS IT TO TELEGRAM AS AN ALERT TO USER
@@ -75,12 +94,12 @@ def check_for_new_alerts():
     with check_lock:
         logging.info('Background check_for_new_alerts() started')
         try:
-            alerts = get_html()
+            #alerts = get_html()
 
             if len(alerts) == 0:
                 logging.info('NOTHING FOUND OR FETCHED!!!!!')
                 return
-
+'''
                 #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
             build_hash_arr(cur_hshs)
             state = [st in hshs for st in cur_hshs]
@@ -90,7 +109,9 @@ def check_for_new_alerts():
             if len(new_alerts) == 0:
                 logging.info('NO NEW alerts detected')
                 hshs = cur_hshs
+                cur_hshs = []
                 return
+'''
 
                 # IF NEW ALERTS, FIGURE OUT IF THEY HAVE A PASSWORD AND LINK TO FOLLOW, OR THEY ARE JUST INFORMATIONAL
                 # SEND A TELEGRAM MESSAGE PER ALERT
@@ -163,9 +184,10 @@ def check_for_new_alerts():
                 telegram_message = ''
                 logging.info('TELEGRAM MESSAGE (BULK) SENT.')
 
-
+'''
             hshs = cur_hshs
             cur_hshs = []
+'''
 
         except Exception as e:
             logging.exception(f'Background check_for_new_alerts() error: {e}')
@@ -201,6 +223,7 @@ def new_alerts():
 
 @app.route('/email')
 def redirect_email():
+    logging.info(f'EMAIL route ({request.query.get('to')})')
     email = request.query.get('to')
     subject = request.query.get('subject', '')
     body = urlencode( request.query.get('body', '') )
