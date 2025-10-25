@@ -49,7 +49,7 @@ def get_html():
         #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
     build_hash_arr(cur_hshs, union_alerts)
     state = [st in hshs for st in cur_hshs]
-    alerts = [alerts[i] for i in range(len(alerts)) if not state[i]]
+    alerts = [union_alerts[i] for i in range(len(union_alerts)) if not state[i]]
 
     logging.info('NEW ALERTS fetched by get_html() ')
     hshs = cur_hshs
