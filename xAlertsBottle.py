@@ -95,24 +95,12 @@ def check_for_new_alerts():
     with check_lock:
         logging.info('Background check_for_new_alerts() started')
         try:
-            #alerts = get_html()
+            get_html()
 
             if len(alerts) == 0:
                 logging.info('NOTHING FOUND OR FETCHED!!!!!')
                 return
-'''
-                #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
-            build_hash_arr(cur_hshs)
-            state = [st in hshs for st in cur_hshs]
-            new_alerts = [alerts[i] for i in range(len(alerts)) if not state[i]]
 
-                #   IF NO NEW ALERTS, UPDATE THE STORED LIST OF HASHES AND RETURN
-            if len(new_alerts) == 0:
-                logging.info('NO NEW alerts detected')
-                hshs = cur_hshs
-                cur_hshs = []
-                return
-'''
 
                 # IF NEW ALERTS, FIGURE OUT IF THEY HAVE A PASSWORD AND LINK TO FOLLOW, OR THEY ARE JUST INFORMATIONAL
                 # SEND A TELEGRAM MESSAGE PER ALERT
