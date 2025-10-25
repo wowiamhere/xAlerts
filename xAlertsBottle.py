@@ -42,10 +42,10 @@ def get_html():
     for a in alerts_div:
         txt = unicodedata.normalize( 'NFKD', a.text )
         union = re.search(r'(?<!non)union', txt )
-        if union not None:
+        if union is not None:
             union_alerts.append( a )
 
-'''
+
         #    HASH THE CURRENT FETCHED ALERTS AND STORE, CHECK IF ANY HASH CHANGED AND SELECT ONLY NEW ALERTS
     build_hash_arr(cur_hshs, union_alerts)
     state = [st in hshs for st in cur_hshs]
@@ -55,21 +55,22 @@ def get_html():
     hshs = cur_hshs
     cur_hshs = []
 '''
-
     logging.info('union_alerts fetched (get_html())')
-
     return union_alerts
+'''
 
+
+def build_hash_arr(cont, to_hash):
+    for alert in to_hash:
+        alert_text = unicodedata.normalize( 'NFKD', alert.text )
+        cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
+
+
+'''
 # TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
 def build_hash_arr(cont):
     global alerts
     for alert in alerts:
-        alert_text = unicodedata.normalize( 'NFKD', alert.text )
-        cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
-
-'''
-def build_hash_arr(cont, to_hash):
-    for alert in to_hash:
         alert_text = unicodedata.normalize( 'NFKD', alert.text )
         cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
 '''
