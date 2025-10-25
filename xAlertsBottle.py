@@ -158,10 +158,10 @@ def check_for_new_alerts():
                     for_view['no_pass'] += alert.html
 
 
-                if telegram_message:
-                    send_telegram_message(telegram_message)
-                    telegram_message = ''
-                    logging.info('TELEGRAM MESSAGE (BULK) SENT.')
+            if telegram_message:
+                send_telegram_message(telegram_message)
+                telegram_message = ''
+                logging.info('TELEGRAM MESSAGE (BULK) SENT.')
 
 
             hshs = cur_hshs
