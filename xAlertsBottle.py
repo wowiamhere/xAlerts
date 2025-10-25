@@ -104,7 +104,7 @@ def check_for_new_alerts():
 
                 # IF NEW ALERTS, FIGURE OUT IF THEY HAVE A PASSWORD AND LINK TO FOLLOW, OR THEY ARE JUST INFORMATIONAL
                 # SEND A TELEGRAM MESSAGE PER ALERT
-            for alert in new_alerts:
+            for alert in alerts:
 
                 for_view.clear()
                 for_view['new'] = ''
