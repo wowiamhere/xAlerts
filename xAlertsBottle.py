@@ -14,23 +14,25 @@ logging.basicConfig(
 )
 logging.info('xAlerts started.')
 
-# FOR TELEGRAM
+    # FOR TELEGRAM
 bot_token = os.environ.get('telXBotToken')
 chat_id = '6451638522'
 telegram_url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
 telegram_message = ''
+
+    #DICTIONARY FOR BOTTLE VIEWS 
 for_view = dict()
 
-# FOR KEEPING TRACK OF NEW ALERTS
+    # FOR KEEPING TRACK OF NEW ALERTS (HASH, CURRENT_HASH, ALERTS AND PASSWORD FOR NEW ALERT)
 hshs = []
 cur_hshs = []
 alerts = None
 pass_code = None
 
-# FOR REQUESTS
+    # FROM requests_html
 session = requests_html.HTMLSession()
 
-# GETS A NEW ALERTS PAGE AND RETRIEVES AND POPULATES THE ALERT VARIABLE
+    # GETS ALERTS FROM PAGE, HASHES THE ALERTS AND COMPARES WITH STORED HASH TO SORT OUT NEW ALERTS
 def get_html():
     global session, alerts, hshs, cur_hshs
     r = session.get('https://extrasalerts.com/la/casting/')
@@ -54,39 +56,28 @@ def get_html():
     logging.info('NEW ALERTS fetched by get_html() ')
     hshs = cur_hshs
     cur_hshs = []
-'''
-    logging.info('union_alerts fetched (get_html())')
-    return union_alerts
-'''
 
 
+    #   HASHES ALERTS FETCHED AND STORES THEM FOR COMPARING 
 def build_hash_arr(cont, to_hash):
+    global alert
     for alert in to_hash:
         alert_text = unicodedata.normalize( 'NFKD', alert.text )
         cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
 
 
-'''
-# TAKES EACH ALERT AND HASHES TO CHECK IN FUTURE IF THE ALERT HAS CHANGED
-def build_hash_arr(cont):
-    global alerts
-    for alert in alerts:
-        alert_text = unicodedata.normalize( 'NFKD', alert.text )
-        cont.append( hashlib.sha256( alert_text.encode('utf-8') ).hexdigest() )
-'''
-
-
-# ONCE A NEW ALERT IS DETECTED IT SENDS IT TO TELEGRAM AS AN ALERT TO USER
+    # ONCE A NEW ALERT IS DETECTED IT SENDS IT TO TELEGRAM AS AN ALERT TO USER
 def send_telegram_message(msg):
     global session, telegram_url
     payload = { 'chat_id': chat_id, 'text': msg, 'parse_mode': 'HTML' }
     return session.post( telegram_url, data=payload )
 
 
+    # FOR CHECKING HOW OFTEN TO CHECK WEBSITE FOR NEW ALERTS
 last_run = 0
 CHECK_INTERVAL = 30  # seconds
 
-# lock to prevent concurrent background runs
+# LOCK TO PREVENT CONCURRENT BACKGROUND RUNS
 check_lock = threading.Lock()
 
 def check_for_new_alerts():
@@ -101,14 +92,14 @@ def check_for_new_alerts():
                 logging.info('NOTHING FOUND OR FETCHED!!!!!')
                 return
 
+            for_view.clear()
+            for_view['no_pass'] = ''
 
                 # IF NEW ALERTS, FIGURE OUT IF THEY HAVE A PASSWORD AND LINK TO FOLLOW, OR THEY ARE JUST INFORMATIONAL
                 # SEND A TELEGRAM MESSAGE PER ALERT
             for alert in alerts:
 
-                for_view.clear()
                 for_view['new'] = ''
-                for_view['no_pass'] = ''
 
                 alert_txt = unicodedata.normalize('NFKD', alert.text)
                 alert_pass = re.search(r'PASSWORD:.*\d\d\d\d', alert_txt)
@@ -151,12 +142,12 @@ def check_for_new_alerts():
                                 else:
                                     telegram_message += l.html + '\n\n'
 
-
+                       # SEND TELEGRAM MESSAGE ASAP PER NEW ALERT AND CLEAN THE ALERT MESSAGE
                     r = send_telegram_message(telegram_message)
                     logging.info('TELEGRAM MESSAGE FOR SINGLE ALERT SENT.')
                     telegram_message = ''
-
                 else:
+                        # IF NO PASSWORD, 
                     telegram_message += '\n--- NO PASSWORD ---\n'
                     telegram_message += alert.text + '\n'
 
