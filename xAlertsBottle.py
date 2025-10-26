@@ -157,6 +157,7 @@ def check_for_new_alerts():
             
                     telegram_message += '-' * 30
                     for_view['no_pass'] += alert.html
+                    for_view['no_pass'] += '<hr>'
 
 
             if telegram_message:
