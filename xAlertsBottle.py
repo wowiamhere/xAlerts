@@ -36,8 +36,10 @@ session = requests_html.HTMLSession()
 def get_html():
     global session, alerts, hshs, cur_hshs
     r = session.get('https://extrasalerts.com/la/casting/')
+    alerts_div = r.html.find('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained')
 
-    alerts_div = r.html.find('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained');
+    r = session.get('https://extrasalerts.com/la/union/')
+    alerts_div = alerts_div + r.html.find('div.wp-block-group.has-border-color.has-global-padding.is-layout-constrained.wp-block-group-is-layout-constrained')
 
     union_alerts = []
 
