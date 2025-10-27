@@ -138,7 +138,7 @@ def check_for_new_alerts():
                                     l_subject = parse_qs( l_parse.query )['subject'][0]
                                     l_subject = l_subject[ l_subject.find('RE:')+3:].strip()
                                     l_url_base = 'http://64.181.234.48:8000/email'
-                                    l_url_params = urlencode( { 'to': l_to, 'subject': l_sujbect } )
+                                    l_url_params = urlencode( { 'to': l_to, 'subject': l_subject } )
                                     l_url = f'{l_url_base}?{l_url_params}'
                                     telegram_message += f'<a href="{l_url}">SUBMIT</a>\n\n'
                                 else:
